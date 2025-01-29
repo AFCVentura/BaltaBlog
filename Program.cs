@@ -23,13 +23,14 @@ public class Program
     }
     public static void Main(string[] args)
     {
-
+       
     }
 
     public static void ReadUsers()
     {
         using (var connection = new SqlConnection(CONNECTION_STRING))
         {
+            // Passa o Model e ele se vira  
             var users = connection.GetAll<User>();
 
             foreach (var user in users)
@@ -38,5 +39,14 @@ public class Program
             }
         }
     }
+    public static void ReadUser()
+    {
+        using (var connection = new SqlConnection(CONNECTION_STRING))
+        {
+            // Passa dentro dos parênteses o Id que quer
+            var user = connection.Get<User>(1);
 
-} 
+            Console.WriteLine(user.Name);
+        }
+    }
+}

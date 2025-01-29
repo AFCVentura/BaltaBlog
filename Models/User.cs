@@ -5,6 +5,12 @@ namespace BaltaBlog.Models;
 [Table("[User]")]
 public class User
 {
+    /* 
+        Se o atributo se chama Id ou UserId, o Dapper
+        sabe que é a PK, mas existe a anotação [Key]
+        para deixar bem claro, nesse caso era opcional
+    */
+    [Key]
     public int Id { get; set; }
     public string Name { get; set; }
     public string Email { get; set; }

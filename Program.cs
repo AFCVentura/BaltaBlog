@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using BaltaBlog.Models;
+using Dapper.Contrib.Extensions;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 
 namespace BaltaBlog;
 
@@ -20,6 +23,20 @@ public class Program
     }
     public static void Main(string[] args)
     {
-        Console.WriteLine("String de Conexão: " + CONNECTION_STRING);
+
     }
-}
+
+    public static void ReadUsers()
+    {
+        using (var connection = new SqlConnection(CONNECTION_STRING))
+        {
+            var users = connection.GetAll<User>();
+
+            foreach (var user in users)
+            {
+                Console.WriteLine(user.Name);
+            }
+        }
+    }
+
+} 

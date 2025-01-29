@@ -23,7 +23,7 @@ public class Program
     }
     public static void Main(string[] args)
     {
-       
+        
     }
 
     public static void ReadUsers()
@@ -47,6 +47,25 @@ public class Program
             var user = connection.Get<User>(1);
 
             Console.WriteLine(user.Name);
+        }
+    }
+
+    public static void CreateUser()
+    {
+        var user = new User()
+        {
+            Name = "Isabela Ventura",
+            Email = "isa.ventura@gmail.com",
+            PasswordHash = "HASH",
+            Bio = "Oii",
+            Image = "https://",
+            Slug = "isabela-ventura"
+        };
+
+        using (var connection = new SqlConnection(CONNECTION_STRING))
+        {
+            long createdId = connection.Insert<User>(user);
+            Console.WriteLine($"Id criado: {createdId}");
         }
     }
 }

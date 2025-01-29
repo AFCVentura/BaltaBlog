@@ -68,4 +68,25 @@ public class Program
             Console.WriteLine($"Id criado: {createdId}");
         }
     }
+
+    public static void UpdateUser()
+    {
+        var user = new User()
+        {
+            Id = 2,
+            Name = "Isabela Ventura",
+            Email = "isa.ventura1304@gmail.com",
+            PasswordHash = "HASH",
+            Bio = "Oi",
+            Image = "https://",
+            Slug = "isabela-ventura"
+        };
+
+        using (var connection = new SqlConnection(CONNECTION_STRING))
+        {
+            bool wasUpdated = connection.Update<User>(user);
+
+            Console.WriteLine(wasUpdated ? "Campo Atualizado" : "Campo não atualizado");
+        }
+    }
 }

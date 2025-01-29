@@ -89,4 +89,16 @@ public class Program
             Console.WriteLine(wasUpdated ? "Campo Atualizado" : "Campo não atualizado");
         }
     }
+    
+    public static void DeleteUser()
+    {
+        using (var connection = new SqlConnection(CONNECTION_STRING))
+        {
+            var user = connection.Get<User>(2);
+
+            bool wasDeleted = connection.Delete<User>(user);
+
+            Console.WriteLine(wasDeleted ? "Campo Apagado" : "Campo não apagado");
+        }
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using BaltaBlog.Models;
+using BaltaBlog.Repositories;
 using Dapper.Contrib.Extensions;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -23,34 +24,27 @@ public class Program
     }
     public static void Main(string[] args)
     {
-        
+        var connection = new SqlConnection(CONNECTION_STRING);
+        connection.Open();
+
+        ReadUsers(connection);
+
+        connection.Close();
     }
 
-    public static void ReadUsers()
+    public static void ReadUsers(SqlConnection connection)
     {
-        using (var connection = new SqlConnection(CONNECTION_STRING))
-        {
-            // Passa o Model e ele se vira  
-            var users = connection.GetAll<User>();
+        var repository = new UserRepository(connection);
+        var users = repository.GetAll();
 
-            foreach (var user in users)
-            {
-                Console.WriteLine(user.Name);
-            }
-        }
-    }
-    public static void ReadUser()
-    {
-        using (var connection = new SqlConnection(CONNECTION_STRING))
+        foreach (var user in users)
         {
-            // Passa dentro dos parênteses o Id que quer
-            var user = connection.Get<User>(1);
-
             Console.WriteLine(user.Name);
         }
     }
 
-    public static void CreateUser()
+
+    public static void CreateUser(SqlConnection connection)
     {
         var user = new User()
         {
@@ -61,15 +55,14 @@ public class Program
             Image = "https://",
             Slug = "isabela-ventura"
         };
+        var repository = new UserRepository(connection);
 
-        using (var connection = new SqlConnection(CONNECTION_STRING))
-        {
-            long createdId = connection.Insert<User>(user);
-            Console.WriteLine($"Id criado: {createdId}");
-        }
+        long createdId = repository.Create(user);
+
+        Console.WriteLine($"Id criado: {createdId}");
     }
 
-    public static void UpdateUser()
+    public static void UpdateUser(SqlConnection connection)
     {
         var user = new User()
         {
@@ -82,23 +75,21 @@ public class Program
             Slug = "isabela-ventura"
         };
 
-        using (var connection = new SqlConnection(CONNECTION_STRING))
-        {
-            bool wasUpdated = connection.Update<User>(user);
+        var repository = new UserRepository(connection);
 
-            Console.WriteLine(wasUpdated ? "Campo Atualizado" : "Campo não atualizado");
-        }
+        bool wasUpdated = repository.Update(user);
+        
+        Console.WriteLine(wasUpdated ? "Campo Atualizado" : "Campo não atualizado");
     }
-    
-    public static void DeleteUser()
+
+    public static void DeleteUser(SqlConnection connection)
     {
-        using (var connection = new SqlConnection(CONNECTION_STRING))
-        {
-            var user = connection.Get<User>(2);
+        var repository = new UserRepository(connection);
 
-            bool wasDeleted = connection.Delete<User>(user);
+        var user = repository.GetById(2);
 
-            Console.WriteLine(wasDeleted ? "Campo Apagado" : "Campo não apagado");
-        }
+        bool wasDeleted = repository.Delete(user);
+
+        Console.WriteLine(wasDeleted ? "Campo Apagado" : "Campo não apagado");
     }
 }

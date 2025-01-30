@@ -11,7 +11,7 @@ public class UserRepository
 
     public UserRepository(SqlConnection connection)
         => _connection = connection;
-    
+
     public IEnumerable<User> GetAll()
         => _connection.GetAll<User>();
 
@@ -19,14 +19,32 @@ public class UserRepository
         => _connection.Get<User>(id);
 
     public long Create(User user)
-        => _connection.Insert<User>(user);
+    {
+        user.Id = 0;
+        return _connection.Insert<User>(user);
+    }
 
     public bool Update(User user)
-        => _connection.Update<User>(user);
+    {
+        if (user.Id != 0)
+            return _connection.Update<User>(user);
+
+        return false;
+    }
 
     public bool Delete(User user)
     {
-        _connection.Get<User>(2);
-        return _connection.Delete<User>(user);
+        if (user.Id != 0)
+            return _connection.Delete<User>(user);
+        return false;
+    }
+    public bool Delete(int id)
+    {
+        if (id != 0)
+        {
+            var user = _connection.Get<User>(id);
+            return _connection.Delete<User>(user);
+        }
+        return false;
     }
 }

@@ -18,14 +18,31 @@ public class RoleRepository
         => _connection.Get<Role>(id);
 
     public long Create(Role role)
-        => _connection.Insert<Role>(role);
-
+    {
+        role.Id = 0;
+        return _connection.Insert<Role>(role);
+    }
     public bool Update(Role role)
-        => _connection.Update<Role>(role);
+    {
+        if (role.Id != 0)
+            return _connection.Update<Role>(role);
+
+        return false;
+    }
 
     public bool Delete(Role role)
     {
-        _connection.Get<Role>(2);
-        return _connection.Delete<Role>(role);
+        if (role.Id != 0)
+            return _connection.Delete<Role>(role);
+        return false;
+    }
+    public bool Delete(int id)
+    {
+        if (id != 0)
+        {
+            var role = _connection.Get<Role>(id);
+            return _connection.Delete<Role>(role);
+        }
+        return false;
     }
 }

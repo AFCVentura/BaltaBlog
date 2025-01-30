@@ -1,10 +1,11 @@
 
+using BaltaBlog.Interfaces;
 using Dapper.Contrib.Extensions;
 
 namespace BaltaBlog.Models;
 
 [Table("[Tag]")]
-public class Tag
+public class Tag : IModel
 {
     [Key]
     public int Id { get; set; }

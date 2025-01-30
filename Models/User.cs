@@ -1,9 +1,10 @@
+using BaltaBlog.Interfaces;
 using Dapper.Contrib.Extensions;
 
 namespace BaltaBlog.Models;
 
 [Table("[User]")]
-public class User
+public class User : IModel
 {
     /* 
         Se o atributo se chama Id ou UserId, o Dapper

@@ -1,4 +1,5 @@
-﻿using BaltaBlog.Models;
+﻿using BaltaBlog.Interfaces;
+using BaltaBlog.Models;
 using BaltaBlog.Repositories;
 using Dapper.Contrib.Extensions;
 using Microsoft.Data.SqlClient;
@@ -27,69 +28,75 @@ public class Program
         var connection = new SqlConnection(CONNECTION_STRING);
         connection.Open();
 
-        ReadUsers(connection);
+        // Read<User>(connection);
+        // Read<Role>(connection);
+        // Read<Tag>(connection);
+        ReadUsersWithRoles(connection);
+
+        // ReadUsers(connection);
+        // ReadRoles(connection);
 
         connection.Close();
     }
 
-    public static void ReadUsers(SqlConnection connection)
+    public static void Read<T>(SqlConnection connection) where T : class, IModel
     {
-        var repository = new UserRepository(connection);
-        var users = repository.GetAll();
-
-        foreach (var user in users)
+        var repository = new Repository<T>(connection);
+        var models = repository.GetAll();
+        foreach (var item in models)
         {
-            Console.WriteLine(user.Name);
+            Console.WriteLine(item.Id);
         }
     }
 
-
-    public static void CreateUser(SqlConnection connection)
+    public static void Create<T>(SqlConnection connection, T model) where T : class, IModel
     {
-        var user = new User()
-        {
-            Name = "Isabela Ventura",
-            Email = "isa.ventura@gmail.com",
-            PasswordHash = "HASH",
-            Bio = "Oii",
-            Image = "https://",
-            Slug = "isabela-ventura"
-        };
-        var repository = new UserRepository(connection);
-
-        long createdId = repository.Create(user);
-
+        var repository = new Repository<T>(connection);
+        long createdId = repository.Create(model);
         Console.WriteLine($"Id criado: {createdId}");
     }
 
-    public static void UpdateUser(SqlConnection connection)
+    public static void Update<T>(SqlConnection connection, T model) where T : class, IModel
     {
-        var user = new User()
-        {
-            Id = 2,
-            Name = "Isabela Ventura",
-            Email = "isa.ventura1304@gmail.com",
-            PasswordHash = "HASH",
-            Bio = "Oi",
-            Image = "https://",
-            Slug = "isabela-ventura"
-        };
+        var repository = new Repository<T>(connection);
 
-        var repository = new UserRepository(connection);
+        bool wasUpdated = repository.Update(model);
 
-        bool wasUpdated = repository.Update(user);
-        
         Console.WriteLine(wasUpdated ? "Campo Atualizado" : "Campo não atualizado");
     }
 
-    public static void DeleteUser(SqlConnection connection)
+    public static void Delete<T>(SqlConnection connection, int id) where T : class, IModel
     {
-        var repository = new UserRepository(connection);
+        var repository = new Repository<T>(connection);
 
-        var user = repository.GetById(2);
+        var model = repository.GetById(id);
 
-        bool wasDeleted = repository.Delete(user);
+        bool wasDeleted = repository.Delete(model);
 
         Console.WriteLine(wasDeleted ? "Campo Apagado" : "Campo não apagado");
+    }
+
+    public static void Delete<T>(SqlConnection connection, T model) where T : class, IModel
+    {
+        var repository = new Repository<T>(connection);
+
+        bool wasDeleted = repository.Delete(model);
+
+        Console.WriteLine(wasDeleted ? "Campo Apagado" : "Campo não apagado");
+    }
+
+    public static void ReadUsersWithRoles(SqlConnection connection)
+    {
+        var repository = new UserRepository(connection);
+        var items = repository.GetWithRoles();
+
+        foreach (var item in items)
+        {
+            Console.WriteLine(item.Name);
+            foreach (var role in item.Roles)
+            {
+                Console.WriteLine($"- {role.Name}");
+            }
+        }
     }
 }
